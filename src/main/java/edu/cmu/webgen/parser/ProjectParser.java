@@ -1,10 +1,10 @@
 package edu.cmu.webgen.parser;
 
+import edu.cmu.webgen.working.*;
+import edu.cmu.webgen.project.*;
+import edu.cmu.webgen.project.Image;
 import edu.cmu.webgen.WebGen;
-import edu.cmu.webgen.project.FormattedTextDocument;
-import edu.cmu.webgen.project.Project;
-import edu.cmu.webgen.project.ProjectBuilder;
-import edu.cmu.webgen.project.ProjectFormatException;
+
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.commonmark.ext.front.matter.YamlFrontMatterBlock;
@@ -269,9 +269,9 @@ public class ProjectParser {
                 result.add(new FormattedTextDocument.EmphasisTextFragment(parseText(node.getFirstChild())));
             else if (node instanceof StrongEmphasis)
                 result.add(new FormattedTextDocument.StrongEmphasisTextFragment(parseText(node.getFirstChild())));
-            else if (node instanceof Image)
-                result.add(new FormattedTextDocument.InlineImage(
-                        ((Image) node).getDestination(), parseText(node.getFirstChild())));
+            // else if (node instanceof Image)
+            //     result.add(new FormattedTextDocument.InlineImage(
+            //             ((Image) node).getDestination(), parseText(node.getFirstChild())));
             else if (node instanceof Link)
                 result.add(new FormattedTextDocument.Link(
                         ((Link) node).getDestination(), parseText(node.getFirstChild())));

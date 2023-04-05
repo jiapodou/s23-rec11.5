@@ -1,41 +1,41 @@
-package edu.cmu.webgen.project;
+package edu.cmu.webgen.working;
 
+import edu.cmu.webgen.project.*;
 import edu.cmu.webgen.WebGen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * A SubSubArticle is a sub-article of a sub-article. While it would be nice if it could have further articles
- * inside it, it seems silly to create more classes for SubSubSubArticles and so forth, hence stopping here for
- * now.
+ * A subarticle is part of another article. May contain inner content, such as text, subsubarticles, and events.
  */
-public class SubSubArticle implements Comparable<SubSubArticle> {
-
+public class SubArticle implements Comparable<SubArticle> {
+    protected @NotNull
+    final List<SubSubArticle> innerArticles;
     protected @NotNull
     final String directoryName;
     protected @NotNull
-//    final List<Event> innerEvents;
+    final Set<Topic> topics = new HashSet<>();
+    //    final List<Event> innerEvents;
     final List<AbstractContent> content;
     private final LocalDateTime lastUpdate;
     private final LocalDateTime created;
     protected @Nullable String id = null;
     protected @NotNull Metadata metadata = new Metadata();
-    private SubArticle parent = null;
+    private Article parent = null;
 
-    public SubSubArticle(List<AbstractContent> content, @NotNull String directoryName, @NotNull LocalDateTime created,
-                  @NotNull LocalDateTime lastUpdate) {
+    public SubArticle(List<AbstractContent> content, @NotNull List<SubSubArticle> subArticles, @NotNull String directoryName, @NotNull LocalDateTime created, @NotNull LocalDateTime lastUpdate) {
         this.content = content;
         this.lastUpdate = lastUpdate;
         this.created = created;
+        this.innerArticles = new ArrayList<>(subArticles);
         this.directoryName = directoryName;
     }
 
-    public int compareTo(@NotNull SubSubArticle that) {
+    public int compareTo(@NotNull SubArticle that) {
         return this.getTitle().compareTo(that.getTitle());
     }
 
@@ -56,7 +56,12 @@ public class SubSubArticle implements Comparable<SubSubArticle> {
      * @return timestamp of last update
      */
     public @NotNull LocalDateTime getLastUpdate() {
-        return this.lastUpdate;
+        Optional<LocalDateTime> innerLastUpdateArticle = this.innerArticles
+                .stream().map(SubSubArticle::getLastUpdate).max(LocalDateTime::compareTo);
+        LocalDateTime last = this.lastUpdate;
+        if (innerLastUpdateArticle.isPresent() && innerLastUpdateArticle.get().compareTo(last) > 0)
+            last = innerLastUpdateArticle.get();
+        return last;
     }
 
     /**
@@ -65,11 +70,23 @@ public class SubSubArticle implements Comparable<SubSubArticle> {
      * @return timestamp of last creation date
      */
     public @NotNull LocalDateTime getCreated() {
-        return this.created;
+        Optional<LocalDateTime> innerCreatedArticle = this.innerArticles
+                .stream().map(SubSubArticle::getCreated).max(LocalDateTime::compareTo);
+//        Optional<LocalDateTime> innerCreatedEvent = innerEvents.stream().map(Event::getCreated).max(LocalDateTime::compareTo);
+        LocalDateTime last = this.created;
+        if (innerCreatedArticle.isPresent() && innerCreatedArticle.get().compareTo(last) > 0)
+            last = innerCreatedArticle.get();
+//        if (innerCreatedEvent.isPresent() && innerCreatedEvent.get().compareTo(last) > 0)
+//            last = innerCreatedEvent.get();
+        return last;
+    }
+
+    public @NotNull List<SubSubArticle> getInnerArticles() {
+        return this.innerArticles;
     }
 
     /**
-     * returns the title of this subsubarticle, either from metadata or from inner content,
+     * returns the title of this subarticle, either from metadata or from inner content,
      * or if those don't exist the directory name
      *
      * @return the title
@@ -85,6 +102,7 @@ public class SubSubArticle implements Comparable<SubSubArticle> {
 
     public void addMetadata(Metadata m) {
         this.metadata = this.metadata.concat(m);
+        this.topics.addAll(Topic.from(m));
     }
 
     public Metadata getMetadata() {
@@ -112,15 +130,16 @@ public class SubSubArticle implements Comparable<SubSubArticle> {
     }
 
     /**
-     * parent of this SubSubArticle.
+     * parent of this SubArticle. A parent can be another {@link SubArticle},
+     * an {@link Article}, or an {@link Event}.
      * <p>
      * Should not be null if initialized correctly by the {@link ProjectBuilder}.
      */
-    public SubArticle getParent() {
+    public Article getParent() {
         return this.parent;
     }
 
-    public void setParent(SubArticle parent) {
+    public void setParent(Article parent) {
         this.parent = parent;
     }
 

@@ -4,6 +4,7 @@ import com.github.jknack.handlebars.internal.text.StringEscapeUtils;
 import com.joestelmach.natty.Parser;
 import edu.cmu.webgen.parser.ProjectParser;
 import edu.cmu.webgen.project.*;
+import edu.cmu.webgen.working.*;
 
 import java.io.StringWriter;
 import java.nio.file.attribute.FileTime;
@@ -29,7 +30,7 @@ public class WebGen {
                 return;
             }
             Project project = new ProjectParser().loadProject(options.getProjectSourceDirectory());
-            new CLI(project).run(options);
+            // new CLI(project).run(options);
         } catch (Exception e) {
             e.printStackTrace();
         }

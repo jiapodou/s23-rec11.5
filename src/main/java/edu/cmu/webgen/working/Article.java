@@ -1,5 +1,6 @@
-package edu.cmu.webgen.project;
+package edu.cmu.webgen.working;
 
+import edu.cmu.webgen.project.*;
 import edu.cmu.webgen.WebGen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,11 +10,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * A subarticle is part of another article. May contain inner content, such as text, subsubarticles, and events.
+ * An article is a key element of a web page. May contain inner content, such as text, inner articles, and events.
  */
-public class SubArticle implements Comparable<SubArticle> {
+public class Article implements Comparable<Article> {
     protected @NotNull
-    final List<SubSubArticle> innerArticles;
+    final List<SubArticle> innerArticles;
     protected @NotNull
     final String directoryName;
     protected @NotNull
@@ -24,9 +25,9 @@ public class SubArticle implements Comparable<SubArticle> {
     private final LocalDateTime created;
     protected @Nullable String id = null;
     protected @NotNull Metadata metadata = new Metadata();
-    private Article parent = null;
 
-    public SubArticle(List<AbstractContent> content, @NotNull List<SubSubArticle> subArticles, @NotNull String directoryName, @NotNull LocalDateTime created, @NotNull LocalDateTime lastUpdate) {
+    public Article(List<AbstractContent> content, @NotNull List<SubArticle> subArticles, @NotNull String directoryName,
+            @NotNull LocalDateTime created, @NotNull LocalDateTime lastUpdate) {
         this.content = content;
         this.lastUpdate = lastUpdate;
         this.created = created;
@@ -34,7 +35,7 @@ public class SubArticle implements Comparable<SubArticle> {
         this.directoryName = directoryName;
     }
 
-    public int compareTo(@NotNull SubArticle that) {
+    public int compareTo(@NotNull Article that) {
         return this.getTitle().compareTo(that.getTitle());
     }
 
@@ -56,7 +57,7 @@ public class SubArticle implements Comparable<SubArticle> {
      */
     public @NotNull LocalDateTime getLastUpdate() {
         Optional<LocalDateTime> innerLastUpdateArticle = this.innerArticles
-                .stream().map(SubSubArticle::getLastUpdate).max(LocalDateTime::compareTo);
+                .stream().map(SubArticle::getLastUpdate).max(LocalDateTime::compareTo);
         LocalDateTime last = this.lastUpdate;
         if (innerLastUpdateArticle.isPresent() && innerLastUpdateArticle.get().compareTo(last) > 0)
             last = innerLastUpdateArticle.get();
@@ -70,7 +71,7 @@ public class SubArticle implements Comparable<SubArticle> {
      */
     public @NotNull LocalDateTime getCreated() {
         Optional<LocalDateTime> innerCreatedArticle = this.innerArticles
-                .stream().map(SubSubArticle::getCreated).max(LocalDateTime::compareTo);
+                .stream().map(SubArticle::getCreated).max(LocalDateTime::compareTo);
 //        Optional<LocalDateTime> innerCreatedEvent = innerEvents.stream().map(Event::getCreated).max(LocalDateTime::compareTo);
         LocalDateTime last = this.created;
         if (innerCreatedArticle.isPresent() && innerCreatedArticle.get().compareTo(last) > 0)
@@ -80,12 +81,13 @@ public class SubArticle implements Comparable<SubArticle> {
         return last;
     }
 
-    public @NotNull List<SubSubArticle> getInnerArticles() {
+    public @NotNull List<SubArticle> getInnerArticles() {
         return this.innerArticles;
     }
 
+
     /**
-     * returns the title of this subarticle, either from metadata or from inner content,
+     * returns the title of this article, either from metadata or from inner content,
      * or if those don't exist the directory name
      *
      * @return the title
@@ -99,6 +101,7 @@ public class SubArticle implements Comparable<SubArticle> {
         return this.directoryName;
     }
 
+
     public void addMetadata(Metadata m) {
         this.metadata = this.metadata.concat(m);
         this.topics.addAll(Topic.from(m));
@@ -111,7 +114,6 @@ public class SubArticle implements Comparable<SubArticle> {
     public void addContent(AbstractContent newcontent) {
         this.content.add(newcontent);
     }
-
 
     public LocalDateTime getPublishedDate() {
         if (this.metadata.has("date")) {
@@ -127,19 +129,4 @@ public class SubArticle implements Comparable<SubArticle> {
     public List<AbstractContent> getContent() {
         return this.content;
     }
-
-    /**
-     * parent of this SubArticle. A parent can be another {@link SubArticle},
-     * an {@link Article}, or an {@link Event}.
-     * <p>
-     * Should not be null if initialized correctly by the {@link ProjectBuilder}.
-     */
-    public Article getParent() {
-        return this.parent;
-    }
-
-    public void setParent(Article parent) {
-        this.parent = parent;
-    }
-
 }
