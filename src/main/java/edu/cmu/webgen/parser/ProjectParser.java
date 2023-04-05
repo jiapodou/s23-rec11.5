@@ -1,5 +1,6 @@
 package edu.cmu.webgen.parser;
 
+import edu.cmu.webgen.DateUtils;
 import edu.cmu.webgen.WebGen;
 import edu.cmu.webgen.project.FormattedTextDocument;
 import edu.cmu.webgen.project.Project;
@@ -44,8 +45,8 @@ public class ProjectParser {
     public Project loadProject(@NotNull File dir) throws IOException, ProjectFormatException {
         if (!(dir.exists() && dir.isDirectory())) throw new IOException("Project directory not found: " + dir);
         BasicFileAttributes attr = Files.readAttributes(dir.toPath(), BasicFileAttributes.class);
-        LocalDateTime folderCreated = new WebGen().getDateTime(attr.creationTime());
-        LocalDateTime folderLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+        LocalDateTime folderCreated = DateUtils.getDateTime(attr.creationTime());
+        LocalDateTime folderLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
         ProjectBuilder builder = new ProjectBuilder(dir.getName(), folderCreated, folderLastUpdate);
         processProject(builder, dir);
         return builder.buildProject();
@@ -76,8 +77,8 @@ public class ProjectParser {
         if (dir.getName().startsWith("_")) return;
 
         BasicFileAttributes attr = Files.readAttributes(dir.toPath(), BasicFileAttributes.class);
-        LocalDateTime folderCreated = new WebGen().getDateTime(attr.creationTime());
-        LocalDateTime folderLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+        LocalDateTime folderCreated = DateUtils.getDateTime(attr.creationTime());
+        LocalDateTime folderLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
         builder.openDirectory(dir.getName(), folderCreated, folderLastUpdate);
         File[] files = dir.listFiles();
         if (files != null) {
@@ -177,8 +178,8 @@ public class ProjectParser {
             Map<String, String> metadata = loadMetadata(document);
             List<FormattedTextDocument.Paragraph> text = parseParagraphList(document.getFirstChild());
             BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            LocalDateTime fileCreated = new WebGen().getDateTime(attr.creationTime());
-            LocalDateTime fileLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+            LocalDateTime fileCreated = DateUtils.getDateTime(attr.creationTime());
+            LocalDateTime fileLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
             long fileSize = attr.size();
             builder.foundTextDocument(text, metadata, fileCreated, fileLastUpdate, fileSize);
         }
@@ -212,8 +213,8 @@ public class ProjectParser {
                         new FormattedTextDocument.PlainTextFragment(paragraph.toString())));
             }
             BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            LocalDateTime fileCreated = new WebGen().getDateTime(attr.creationTime());
-            LocalDateTime fileLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+            LocalDateTime fileCreated = DateUtils.getDateTime(attr.creationTime());
+            LocalDateTime fileLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
             long fileSize = attr.size();
             builder.foundTextDocument(paragraphs, Collections.emptyMap(), fileCreated, fileLastUpdate, fileSize);
         }
@@ -286,8 +287,8 @@ public class ProjectParser {
     public void loadImage(@NotNull ProjectBuilder builder, File file) throws IOException, ProjectFormatException {
         assert file.exists();
         BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-        LocalDateTime fileCreated = new WebGen().getDateTime(attr.creationTime());
-        LocalDateTime fileLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+        LocalDateTime fileCreated = DateUtils.getDateTime(attr.creationTime());
+        LocalDateTime fileLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
         builder.foundImage(file, fileCreated, fileLastUpdate, attr.size());
     }
 
@@ -297,8 +298,8 @@ public class ProjectParser {
     public void loadVideo(@NotNull ProjectBuilder builder, File file) throws IOException, ProjectFormatException {
         assert file.exists();
         BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-        LocalDateTime fileCreated = new WebGen().getDateTime(attr.creationTime());
-        LocalDateTime fileLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+        LocalDateTime fileCreated = DateUtils.getDateTime(attr.creationTime());
+        LocalDateTime fileLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
         builder.foundVideo(file, fileCreated, fileLastUpdate, attr.size());
     }
 
@@ -309,8 +310,8 @@ public class ProjectParser {
         assert file.exists();
         Map<String, String> m = parseMetadataFile(file);
         BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-        LocalDateTime fileCreated = new WebGen().getDateTime(attr.creationTime());
-        LocalDateTime fileLastUpdate = new WebGen().getDateTime(attr.lastModifiedTime());
+        LocalDateTime fileCreated = DateUtils.getDateTime(attr.creationTime());
+        LocalDateTime fileLastUpdate = DateUtils.getDateTime(attr.lastModifiedTime());
         if (m.containsKey("id"))
             builder.foundYoutubeVideo(m.get("id"), m, fileCreated, fileLastUpdate, attr.size());
         else

@@ -1,5 +1,6 @@
 package edu.cmu.webgen.rendering;
 
+import edu.cmu.webgen.DateUtils;
 import edu.cmu.webgen.WebGen;
 import edu.cmu.webgen.WebGenArgs;
 import edu.cmu.webgen.project.*;
@@ -42,7 +43,7 @@ public class Renderer {
         this.targetDirectory = targetDirectory;
         this.templateEngine = templateEngine;
         this.sorting = sorting;
-        this.siteGenerationTime = WebGen.readableFormat(LocalDateTime.now());
+        this.siteGenerationTime = DateUtils.readableFormat(LocalDateTime.now());
     }
 
     /**
@@ -147,8 +148,8 @@ public class Renderer {
         String relPath = getRelPath(HOME_ADDRESS);
         List<ArticlePreview> articles = project.getArticles().stream().sorted((o1, o2) -> {
                     if (this.sorting == WebGenArgs.ArticleSorting.PINNED) {
-                        if (project.isArticlePinned(o1) && !project.isArticlePinned(o2)) return -1;
-                        if (!project.isArticlePinned(o1) && project.isArticlePinned(o2)) return 1;
+                        if (o1.isArticlePinned() && !o2.isArticlePinned()) return -1;
+                        if (!o1.isArticlePinned() && o2.isArticlePinned()) return 1;
                     }
                     if (this.sorting == WebGenArgs.ArticleSorting.PUBLISHED_FIRST)
                         if (!o1.getPublishedDate().equals(o2.getPublishedDate()))
@@ -221,7 +222,7 @@ public class Renderer {
                 siteData,
                 article.getTitle(),
                 breadcrumbs,
-                WebGen.readableFormat(article.getPublishedDate()),
+                DateUtils.readableFormat(article.getPublishedDate()),
                 topics,
                 getArticleContent(article, relPath));
         File targetFile = new File(new File(this.targetDirectory, pagePath), "index.html");
@@ -240,7 +241,7 @@ public class Renderer {
                 siteData,
                 subArticle.getTitle(),
                 breadcrumbs,
-                WebGen.readableFormat(subArticle.getPublishedDate()),
+                DateUtils.readableFormat(subArticle.getPublishedDate()),
                 topics,
                 getSubArticleContent(subArticle, relPath));
         File targetFile = new File(new File(this.targetDirectory, pagePath), "index.html");
@@ -259,7 +260,7 @@ public class Renderer {
                 siteData,
                 subSubArticle.getTitle(),
                 breadcrumbs,
-                WebGen.readableFormat(subSubArticle.getPublishedDate()),
+                DateUtils.readableFormat(subSubArticle.getPublishedDate()),
                 topics,
                 getSubSubArticleContent(subSubArticle, relPath));
         File targetFile = new File(new File(this.targetDirectory, pagePath), "index.html");
@@ -671,7 +672,7 @@ public class Renderer {
         return new ArticlePreview(
                 prefix,
                 article.getTitle(),
-                WebGen.readableFormat(article.getPublishedDate()),
+                DateUtils.readableFormat(article.getPublishedDate()),
                 w.toString(),
                 relPath,
                 getArticleURL(article));
@@ -691,7 +692,7 @@ public class Renderer {
         return new ArticlePreview(
                 prefix,
                 article.getTitle(),
-                WebGen.readableFormat(article.getPublishedDate()),
+                DateUtils.readableFormat(article.getPublishedDate()),
                 w.toString(),
                 relPath,
                 getSubArticleURL(article));
@@ -711,7 +712,7 @@ public class Renderer {
         return new ArticlePreview(
                 prefix,
                 article.getTitle(),
-                WebGen.readableFormat(article.getPublishedDate()),
+                DateUtils.readableFormat(article.getPublishedDate()),
                 w.toString(),
                 relPath,
                 getSubSubArticleURL(article));

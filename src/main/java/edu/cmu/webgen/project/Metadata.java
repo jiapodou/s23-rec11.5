@@ -1,8 +1,9 @@
 package edu.cmu.webgen.project;
 
-import edu.cmu.webgen.WebGen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import edu.cmu.webgen.DateUtils;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class Metadata {
     public boolean isDate(String key) {
         if (!has(key)) return false;
         try {
-            WebGen.parseDate(get(key));
+            DateUtils.parseDate(get(key));
             return true;
         } catch (ParseException e) {
             System.err.println("Warning: Cannot parse date in metadata: %s -- %s".formatted(get(key), e.getMessage()));
@@ -49,7 +50,7 @@ public class Metadata {
 
     public @Nullable LocalDateTime getDate(String key) {
         try {
-            return WebGen.parseDate(get(key));
+            return DateUtils.parseDate(get(key));
         } catch (ParseException e) {
             return null;
         }

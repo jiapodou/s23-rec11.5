@@ -1,14 +1,11 @@
 package edu.cmu.webgen;
 
 import com.github.jknack.handlebars.internal.text.StringEscapeUtils;
-import com.joestelmach.natty.Parser;
+
 import edu.cmu.webgen.parser.ProjectParser;
 import edu.cmu.webgen.project.*;
 
 import java.io.StringWriter;
-import java.nio.file.attribute.FileTime;
-import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -18,9 +15,6 @@ import java.util.*;
 public class WebGen {
 
     private static final Map<String, Integer> idCounter = new HashMap<>();
-    private static final DateTimeFormatter formatter =
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
-
     public static void main(String[] args) {
         try {
             WebGenArgs options = new WebGenArgs(args);
@@ -33,33 +27,6 @@ public class WebGen {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * using external library to flexibly parse dates
-     * <p>
-     * requires a bit of hacking with different time formats
-     *
-     * @param inputDate input date string in human readable time/date format
-     * @return parsed date as LocalDateTime
-     * @throws ParseException if input date string cannot be parsed
-     */
-    public static LocalDateTime parseDate(String inputDate) throws ParseException {
-        List<Date> dates = new Parser().parse(inputDate,
-                Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())).get(0).getDates();
-        if (dates.isEmpty())
-            throw new ParseException("Cannot parse date %s".formatted(inputDate), 0);
-        return LocalDateTime.ofInstant(dates.get(0).toInstant(), ZoneId.systemDefault());
-    }
-
-    /**
-     * print a date in a readable format
-     *
-     * @param date the date
-     * @return string representing the date
-     */
-    public static String readableFormat(LocalDateTime date) {
-        return formatter.format(date.atZone(ZoneId.systemDefault()));
     }
 
     public static String genId(String title) {
@@ -95,15 +62,8 @@ public class WebGen {
         return result;
     }
 
-    /**
-     * helper functions to convert FileTime into LocalDateTime
-     *
-     * @param fileTime input time
-     * @return LocalDateTime object for the same file
-     */
-    public LocalDateTime getDateTime(FileTime fileTime) {
-        return LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
-    }
+    static final DateTimeFormatter formatter =
+    DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
 
     public int previewText(FormattedTextDocument.FormattedTextContent content, StringWriter w, int maxLength) {
         if (content instanceof FormattedTextDocument.TextFragmentSequence node) {
@@ -186,4 +146,5 @@ public class WebGen {
         }
         return result;
     }
+
 }

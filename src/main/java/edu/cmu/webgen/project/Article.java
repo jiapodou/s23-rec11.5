@@ -1,5 +1,6 @@
 package edu.cmu.webgen.project;
 
+import edu.cmu.webgen.DateUtils;
 import edu.cmu.webgen.WebGen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +118,7 @@ public class Article implements Comparable<Article> {
     public LocalDateTime getPublishedDate() {
         if (this.metadata.has("date")) {
             try {
-                return WebGen.parseDate(this.metadata.get("date"));
+                return DateUtils.parseDate(this.metadata.get("date"));
             } catch (ParseException e) {
                 System.err.println(e.getMessage());
             }
@@ -127,5 +128,9 @@ public class Article implements Comparable<Article> {
 
     public List<AbstractContent> getContent() {
         return this.content;
+    }
+
+    public boolean isArticlePinned() {
+        return getMetadata().has("pinned") && !getMetadata().get("pinned").equals("false");
     }
 }

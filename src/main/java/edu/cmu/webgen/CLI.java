@@ -120,8 +120,8 @@ public class CLI {
         List<Article> topLeveLArticles = project.getArticles();
         topLeveLArticles.sort((o1, o2) -> {
             if (sorting == WebGenArgs.ArticleSorting.PINNED) {
-                if (this.project.isArticlePinned(o1) && !this.project.isArticlePinned(o2)) return -1;
-                if (!this.project.isArticlePinned(o1) && this.project.isArticlePinned(o2)) return 1;
+                if (o1.isArticlePinned() && !o2.isArticlePinned()) return -1;
+                if (!o1.isArticlePinned() && o2.isArticlePinned()) return 1;
             }
             if (sorting == WebGenArgs.ArticleSorting.PUBLISHED_FIRST)
                 if (!o1.getPublishedDate().equals(o2.getPublishedDate()))
@@ -139,16 +139,16 @@ public class CLI {
         for (Article topLeveLArticle : topLeveLArticles) {
             String topicStr = topics ? getTopicsStr(this.project.getTopics(topLeveLArticle)) : "";
             System.out.println(" - %s (%s) %s".formatted(topLeveLArticle.getTitle(),
-                    WebGen.readableFormat(topLeveLArticle.getPublishedDate()), topicStr));
+                    DateUtils.readableFormat(topLeveLArticle.getPublishedDate()), topicStr));
             if (all) {
                 for (SubArticle sa : topLeveLArticle.getInnerArticles()) {
                     String topicStr2 = topics ? getTopicsStr(this.project.getTopics(sa)) : "";
                     System.out.println("   - %s (%s) %s".formatted(sa.getTitle(),
-                            WebGen.readableFormat(sa.getPublishedDate()), topicStr2));
+                            DateUtils.readableFormat(sa.getPublishedDate()), topicStr2));
                     for (SubSubArticle ssa : sa.getInnerArticles()) {
                         String topicStr3 = topics ? getTopicsStr(this.project.getTopics(ssa)) : "";
                         System.out.println("     - %s (%s) %s".formatted(ssa.getTitle(),
-                                WebGen.readableFormat(ssa.getPublishedDate()), topicStr3));
+                                DateUtils.readableFormat(ssa.getPublishedDate()), topicStr3));
                     }
                 }
             }
