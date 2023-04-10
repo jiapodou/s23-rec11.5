@@ -1,0 +1,5 @@
+.idea/
+_static
+out/
+target/
+.DS_Store
