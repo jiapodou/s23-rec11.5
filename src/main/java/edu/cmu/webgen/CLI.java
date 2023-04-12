@@ -120,8 +120,8 @@ public class CLI {
         List<Article> topLeveLArticles = project.getArticles();
         topLeveLArticles.sort((o1, o2) -> {
             if (sorting == WebGenArgs.ArticleSorting.PINNED) {
-                if (this.project.isArticlePinned(o1) && !this.project.isArticlePinned(o2)) return -1;
-                if (!this.project.isArticlePinned(o1) && this.project.isArticlePinned(o2)) return 1;
+                if (o1.isArticlePinned() && !o2.isArticlePinned()) return -1;
+                if (!o1.isArticlePinned() && o2.isArticlePinned()) return 1;
             }
             if (sorting == WebGenArgs.ArticleSorting.PUBLISHED_FIRST)
                 if (!o1.getPublishedDate().equals(o2.getPublishedDate()))

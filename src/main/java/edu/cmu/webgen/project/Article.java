@@ -128,4 +128,8 @@ public class Article implements Comparable<Article> {
     public List<AbstractContent> getContent() {
         return this.content;
     }
+
+    public boolean isArticlePinned() {
+        return getMetadata().has("pinned") && !getMetadata().get("pinned").equals("false");
+    }
 }

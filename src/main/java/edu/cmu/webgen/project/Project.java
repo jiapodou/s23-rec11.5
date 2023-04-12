@@ -95,8 +95,4 @@ public class Project {
     public String getOwnerOrg() {
         return this.ownerOrg;
     }
-
-    public boolean isArticlePinned(Article article) {
-        return article.getMetadata().has("pinned") && !article.getMetadata().get("pinned").equals("false");
-    }
 }

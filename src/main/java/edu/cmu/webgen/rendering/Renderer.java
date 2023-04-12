@@ -147,8 +147,8 @@ public class Renderer {
         String relPath = getRelPath(HOME_ADDRESS);
         List<ArticlePreview> articles = project.getArticles().stream().sorted((o1, o2) -> {
                     if (this.sorting == WebGenArgs.ArticleSorting.PINNED) {
-                        if (project.isArticlePinned(o1) && !project.isArticlePinned(o2)) return -1;
-                        if (!project.isArticlePinned(o1) && project.isArticlePinned(o2)) return 1;
+                        if (o1.isArticlePinned() && !o2.isArticlePinned()) return -1;
+                        if (!o1.isArticlePinned() && o2.isArticlePinned()) return 1;
                     }
                     if (this.sorting == WebGenArgs.ArticleSorting.PUBLISHED_FIRST)
                         if (!o1.getPublishedDate().equals(o2.getPublishedDate()))
